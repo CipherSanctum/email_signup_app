@@ -1,0 +1,134 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
+  {% if cl.formset %}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+  {% endif %}
+  {% if cl.formset or action_form %}
+    <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+  {% endif %}
+  {{ media.css }}
+  {% if not actions_on_top and not actions_on_bottom %}
+    <style>
+      #changelist table thead th:first-child {width: inherit}
+    </style>
+  {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+{{ media.js }}
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=cl.opts.app_label %}">{{ cl.opts.app_config.verbose_name }}</a>
+&rsaquo; {{ cl.opts.verbose_name_plural|capfirst }}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block coltype %}flex{% endblock %}
+
+{% block content %}
+
+  <div id="content-main">
+
+    <h1><u><mark><strong style="color: red;">SEE THE DIRECTIONS AT THE BOTTOM TO LEARN HOW TO USE THIS APP</strong></mark></u></h1>
+
+    {% block object-tools %}
+        <ul class="object-tools">
+            <li><a href="/admin/email_signup_app/emailcampaign/add/" class="addlink">Add an email campaign</a></li>
+        </ul>
+    {% endblock %}
+
+    {% if cl.formset and cl.formset.errors %}
+        <p class="errornote">
+        {% if cl.formset.total_error_count == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+        </p>
+        {{ cl.formset.non_form_errors }}
+    {% endif %}
+
+    <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+      {% block search %}{% search_form cl %}{% endblock %}
+      {% block date_hierarchy %}{% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}{% endblock %}
+
+      {% block filters %}
+        {% if cl.has_filters %}
+          <div id="changelist-filter">
+            <h2>{% trans 'Filter' %}</h2>
+            {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+          </div>
+        {% endif %}
+      {% endblock %}
+
+      <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>{% csrf_token %}
+      {% if cl.formset %}
+        <div>{{ cl.formset.management_form }}</div>
+      {% endif %}
+
+      {% block result_list %}
+          {% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+          {% result_list cl %}
+          {% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+      {% endblock %}
+      {% block pagination %}{% pagination cl %}{% endblock %}
+      </form>
+
+    </div>
+
+    <div style="background-image: linear-gradient(90deg, deepskyblue, linen, deepskyblue); padding: 10px; border-radius: 30px/10px; border-style: solid; border-width: thin; border-color: black;">
+        <h1><u><strong style="color: black;">HOW TO USE THIS APP, AND WHY:</strong></u></h1>
+        <p><strong><u>Overview:</u></strong> The purpose of everything that follows is to make it so you can warm up your email server. <span style="color: red"><strong>If you don't do this,
+          your emails are much more likely to arrive in the spam folder of your recipients, or blocked entirely.</strong></span> To do it safely, you must send your campaigns bit by bit at
+          first, and slowly ramp up the amount you send at a time. Such as 20 the first day, 50 on the 2nd, 100 on the 3rd, and so on. Since your email server is a new IP that has no bulk
+          sending history, doing this gives ISP's the opportunity to identify and evaluate your sending habits before giving the "okay" to send to your entire email list. This gives
+          them a "normal" level to judge you by, and you want them to know these levels so they don't ban you for suspicious behavior. Later on <i>(once you start sending 1,000's of emails a
+          day, or whatever your normal behavior is)</i> you don't have to worry about this, and can send them all at once.</p>
+
+        <p><strong><u>During your warmup period, and after:</u></strong> ISP's will evaluate your sending behavior, and what they consider relevant and useful info to recipients. They judge
+          that by having more engagement with your emails, such as by checking how many people opened it, scrolled to the bottom, moved your message to other folders, clicked
+          links in the email, and replies. Most reputation's among the servers you'll send email to only store this data about you for 30 days, so you should not go 30 days or more without sending
+          on any given IP. If you do, then you will need to warm it up again.</p>
+
+        <p><strong><u>If you get any bounced emails in your inbox after sending:</u></strong> They will be sent to your primary email account for this website, and you have to delete those
+          emails from your list before sending to them again. <span style="color: red"><strong>BUT DO NOT DELETE ANY EMAILS UNTIL THE CAMPAIGN HAS BEEN SENT TO EVERYONE ON YOUR
+          LIST.</strong></span> Once it's been sent to everyone, you can check all the bounced emails, and delete them. If you keep sending to emails that aren't valid anymore, your email ip
+          gets punished by other ISP's, and they will start to think you're sending spam.</p>
+
+        <h2><u><strong>HOW TO MAKE A CAMPAIGN, AND WARM UP YOUR EMAIL SERVER:</strong></u></h2>
+        <p>If you plan on sending 100,000 emails a month, start with 25 on your first day, 50 the next, 100 the next, and keep doubling until you hit 100,000 TOTAL in the month.
+          <span style="color: red"><strong>READ ON TO SEE HOW TO DO THIS PROPERLY.</strong></span></p>
+        <ol>
+          <li>Create a new campaign by clicking the "add an email campaign" button on the upper right. The default start and end points should be 0. The number 0 refers to the first
+            person on your email list, because programming languages start things at 0. If you don't start at 0, the first person on your list won't get an email.</li>
+          <li>Go to the row of the campaign you wish to send, and change the end point to 25. Then click the save button at the bottom. No need to hit the checkbox first.</li>
+          <li>Once you're alerted at the top of the screen that <i>"1 email campaign was changed successfully",</i> the new value for that end point in that row should now be 25.</li>
+          <li>Click the checkbox of the campaign you wish to send, go to the <i>"Action"</i> drop down menu above it, and select the option <i>"Send selected campaign to emails from start point
+            to end point in your email list".</i> <strong style="color: red;">DO NOT SELECT ANYMORE THAN 1 CHECKBOX. If you do, it will only go to one of the campaigns.</strong></li>
+          <li>Click <i>"Go"</i> and you will be notified at the top again that the emails for the campaign you had checked are being sent.</li>
+          <li>The next day, go to the row of the same campaign, make it's start point the current end point (25), and make the end point 50. <b><u>SAVE IT...</u></b> Just like when you
+            originally set the start point to 0 to make sure the 0th person gets an email, if you don't change the new start point to 25, the 25th person won't get an email.</li>
+          <li>The next day, again, go to the row of the same campaign, change it's start point the current end point (50), and make the end point 100. <b><u>SAVE IT.</u></b></li>
+          <li>Continue until your whole list has been emailed with that specific campaign. You can find the entire length by going into the <i>People on list</i> section of the <i>Email
+            Signup App, and looking at the bottom of the list that shows up.</i> Since it will grow over time, and to speed it up, I limit the amount shown on each page to 50.</li>
+        </ol>
+
+        <p><strong><u>To send to your entire list all at once:</u></strong> Set your start point to 0, and your end point to at least 1 above your entire confirmed
+          list, or a very high number like 9999999. <span style="color: red"><strong>Don't do this unless you are used to sending 1,000's of emails every day.</strong></span></p>
+
+        <p><strong><u>TO PREVENT TRAFFIC SPIKES TO YOUR SITE:</u></strong> Drip everything out like before, but in larger chunks than usual <i>(if you're used to sending 100,000 emails a month, try
+          starting at 0 to 500, and increasing by 1,000 every day instead of 500, and double that amount every other day).</i> Doing this will make it so smaller amounts of people act on
+          those emails at a time, so you don't get traffic spikes and people who don't want to be on your site because of the lag from too many people.</p>
+
+    </div>
+
+  </div>
+{% endblock %}

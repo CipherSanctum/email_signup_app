@@ -1,0 +1,108 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
+  {% if cl.formset %}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+  {% endif %}
+  {% if cl.formset or action_form %}
+    <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+  {% endif %}
+  {{ media.css }}
+  {% if not actions_on_top and not actions_on_bottom %}
+    <style>
+      #changelist table thead th:first-child {width: inherit}
+    </style>
+  {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+{{ media.js }}
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=cl.opts.app_label %}">{{ cl.opts.app_config.verbose_name }}</a>
+&rsaquo; {{ cl.opts.verbose_name_plural|capfirst }}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block coltype %}flex{% endblock %}
+
+{% block content %}
+
+  <div id="content-main">
+
+    <h1><u><mark><strong style="color: red;">SEE THE DIRECTIONS AT THE BOTTOM TO LEARN HOW TO USE THIS APP</strong></mark></u></h1>
+
+    {% block object-tools %}
+        <ul class="object-tools">
+            <li><a href="/admin/email_signup_app/emaillistpersondelete/add/" class="addlink">Add an email to delete</a></li>
+        </ul>
+    {% endblock %}
+
+    {% if cl.formset and cl.formset.errors %}
+        <p class="errornote">
+        {% if cl.formset.total_error_count == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+        </p>
+        {{ cl.formset.non_form_errors }}
+    {% endif %}
+
+    <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+      {% block search %}{% search_form cl %}{% endblock %}
+      {% block date_hierarchy %}{% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}{% endblock %}
+
+      {% block filters %}
+        {% if cl.has_filters %}
+          <div id="changelist-filter">
+            <h2>{% trans 'Filter' %}</h2>
+            {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+          </div>
+        {% endif %}
+      {% endblock %}
+
+      <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>{% csrf_token %}
+      {% if cl.formset %}
+        <div>{{ cl.formset.management_form }}</div>
+      {% endif %}
+
+      {% block result_list %}
+          {% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+          {% result_list cl %}
+          {% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+      {% endblock %}
+      {% block pagination %}{% pagination cl %}{% endblock %}
+      </form>
+
+    </div>
+
+    <div style="background-image: linear-gradient(90deg, deepskyblue, linen, deepskyblue); padding: 10px; border-radius: 30px/10px; border-style: solid; border-width: thin; border-color: black;">
+        <h1><u><strong style="color: black;">HOW TO USE THIS APP, AND WHY:</strong></u></h1>
+        <ol>
+          <li style="font-size: large; margin-bottom: 30px;">Select ALL emails.</li>
+          <li style="font-size: large; margin-bottom: 30px;">Choose the 'Action' labeled as <span style="color:red">"Remove ALL people here from your email list. DO NOT USE BEFORE CAMPAIGN SENDING IS COMPLETED"</span>.</li>
+          <li style="font-size: large; margin-bottom: 30px;">Hit go.</li>
+          <li style="font-size: large; margin-bottom: 30px;">Now they're all removed from your sending list.</li>
+        </ol>
+
+        <h1 style="color:red; margin-top: 50px;"><strong><u>WARNINGS:</u></strong></h1>
+        <ol style="color:red;">
+          <li style="font-size: large; margin-bottom: 30px;">If you don't select the proper 'Action' option, they won't be removed from the list, but only this page.</li>
+          <li style="font-size: large; margin-bottom: 30px;"><strong>DO NOT USE THIS IF YOUR CURRENT EMAIL CAMPAIGN IS NOT DONE SENDING TO EVERYONE.</strong> If you use this before then, it's possible you will end up sending
+            multiple emails to the same person, or skip sending to others. That will hurt your mail server's rating, and can eventually make it harder for your
+            emails to reach the inbox.</li>
+          <li style="font-size: large; margin-bottom: 30px;">If someone wants off, make sure you remove them before sending to your next campaign. If you don't and they flag your email as spam,
+            that's just as bad. So remove it with the proper 'Action' to keep your email server's reputation up.</li>
+        </ol>
+    </div>
+
+  </div>
+{% endblock %}

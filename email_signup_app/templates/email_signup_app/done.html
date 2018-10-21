@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+
+{% block head_tag_seo %}
+    <title>You have successfully signed up!</title>
+{% endblock head_tag_seo %}
+
+
+
+{% block maincontent %}
+
+
+  {% if too_many_times %}
+
+      <h1 class="margintop100px">{{ too_many_times }}</h1>
+      <p>I was hoping you wouldn't use this page so many times. The limit I set is 3. If it really is the person who signed up to my email list, type your email in below,
+        and if it's right I'll let you download it again.</p>
+      <p>No need to worry about capital letters, because I forced it lowercase on the backend when you signed up, and again here.</p>
+
+      <form method="POST" action="." class="margintop80px">
+        {% csrf_token %}
+        <div class="signup_form">
+          <label><u>Re-type your email</u></label>
+          <input type="text" name="email" placeholder="put email here..." class="center_input_25px_margin_top inputbox disp_block">
+          <input type="submit" value="Confirm!" class="submitbox center_input_25px_margin_top disp_block">
+        </div>
+      </form>
+
+
+  {% elif wrong_email %}
+
+      <h1 class="margintop100px">{{ wrong_email }}</h1>
+      <p>Maybe you typed a button wrong? Whatever, just try again.</p>
+
+      <form method="POST" action="." class="margintop80px">
+        {% csrf_token %}
+        <div class="signup_form">
+          <label><u>Re-type your email</u></label>
+          <input type="text" name="email" placeholder="put email here..." class="center_input_25px_margin_top inputbox disp_block">
+          <input type="submit" value="Confirm!" class="submitbox center_input_25px_margin_top disp_block">
+        </div>
+      </form>
+
+
+  {% elif reset_times_downloaded %}
+
+      <!-- The idea of this spot is to invoke a sense of 'hurry up and download the file / stop
+          downloading it so many times' feeling. It's not required though... Tell them they have a limited numebr of times to downlaod it, etc.  -->
+      <h1 class="margintop100px">{{ reset_times_downloaded }}</h1>
+      <h1>XXXXXXXXXXXXXX   INSERT SOME OTHER WEBSITE HOSTING THE PDF FILE   XXXXXXXXXX XXXXXXXXXXX XXXXXXXXXX</h1>
+      <p>Re-download the free PDF <a href="INSERT SOME OTHER WEBSITE HOSTING THE FILE - doesn't matter if it's not a protected file">right here.</a>
+        Please right click the link and save as because there's a limited number of times you can view this page.</p>
+      <p>Sorry for doing that, but I had to write a lot of functions to protect my website from certain attacks.</p>
+
+
+  {% else %}
+
+      <!-- See above notes for why I it looks like I do this twice -->
+      <h1 class="margintop100px">{{ signed_up }}</h1>
+      <h1>XXXXXXXXXXXXXX   INSERT SOME OTHER WEBSITE HOSTING THE PDF FILE   XXXXXXXXXX XXXXXXXXXXX XXXXXXXXXX</h1>
+      <p>Download the free sample <a href="INSERT SOME OTHER WEBSITE HOSTING THE FILE - doesn't matter if it's not a protected file">right here.</a>
+        Please right click the link and save as because there's a limited number of times you can view this page.</p>
+      <p>Sorry for doing that, but I had to write a lot of functions to protect my website from certain attacks.</p>
+
+  {% endif %}
+
+
+{% endblock maincontent %}

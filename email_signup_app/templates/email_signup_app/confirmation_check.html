@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+
+{% block head_tag_seo %}
+    <title>Email confirmation check.</title>
+{% endblock head_tag_seo %}
+
+
+
+{% block maincontent %}
+
+  {% if dont_send_twice %}
+
+      <h1 class="margintop100px">You were already sent an email</h1>
+
+      <p style="font-size:1.5em;">It was sent to <mark>{{ dont_send_twice.email }}.</mark></p>
+
+      <p><mark>Please wait at least 5 minutes to get it.</mark> I'm not using a super expensive "ferrari" server to send you emails. So that time can be more or less
+        depending on my current server load.</p>
+
+      <h2  class="margintop50px">But if you want to confirm it right now...</h2>
+
+
+      <div class="captcha_no_ajax">
+        <label><h3>Insert the answer below as <mark>UPPERCASE ROMAN NUMERALS.</mark></h3></label>
+        <h4>Remember that...</h4>
+        <ul class="nolist">
+          <li class="tnr">I = 1</li>
+          <li class="tnr">III = 3</li>
+          <li class="tnr">IV = 4</li>
+          <li class="tnr">V = 5</li>
+          <li class="tnr">IX = 9</li>
+          <li class="tnr">X = 10</li>
+        </ul>
+
+        <div class="paddingtop20px">
+          <img id="hidden_img" class="disp_none" src="{{ random_img.image.url }}">
+          <input id="show_hidden_img_button" type="button" class="submitbox ephesian" value="Show image">
+          <input type="hidden" id="correct_answer" name="correct_answer" value="{{ random_img.img_value }}">
+          <noscript style="background-color:black;color:red;"><mark>If you can read this sentence, you ought to
+            activate javascript for this to work properly. I suggest using the most updated version of Firefox or Chrome.</mark></noscript>
+        </div>
+
+
+        <h4><mark>***lowercase letters will not work.***</mark></h4>
+
+        <div id="feedback">This spot will update whether the answer is right or wrong.</div>
+
+        <input id="user_answer" class="inputbox margintop25px" type="text">
+
+      </div>
+
+
+  {% elif already_confirmed %}
+
+      <h1 class="margintop100px">You've been on the list</h1>
+
+      <p style="font-size:1.5em;">You've been on as <u>{{ already_confirmed.email }}</u>. If you want to download it
+        again, <a href="{% url 'email_signup_app:email_signup_done' already_confirmed.id already_confirmed.random_uuid already_confirmed.rand_int %}">click here.</a></p>
+
+
+  {% else %}
+
+      <h1 class="margintop100px">Confirmation check:</h1>
+
+      <p>Please validate <strong><u>{{ unconf_email.email }}</u></strong> by clicking the confirm button below:</p>
+
+      <form action="." method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Confirm!" class="submitbox">
+      </form>
+
+  {% endif %}
+
+
+{% endblock maincontent %}
+
+
+
+
+{% block javascript %}
+
+  <script type="text/javascript">
+
+      var correct_answer = document.getElementById('correct_answer');
+      var user_answer = document.getElementById('user_answer');
+      var feedback = document.getElementById('feedback');
+      var show_hidden_img_button = document.getElementById('show_hidden_img_button');
+      var hidden_img = document.getElementById('hidden_img');
+
+
+      function checkAnswer() {
+        if (correct_answer.value === user_answer.value) {
+          feedback.innerHTML = '<h2 class="captch_no_ajax_answer correct padding5px"><a href="/email_signup/{{ dont_send_twice.id }}/{{ dont_send_twice.random_uuid }}/">Click here to go to the confirmation page.</a></h2>';
+        } else {
+          feedback.innerHTML = "<h2 class='error center_input_10px_margin_top'>Wrong answer, try again.</h2>";
+        }
+      }
+
+
+      function showImage() {
+        hidden_img.classList.remove('disp_none');
+        show_hidden_img_button.classList.add('disp_none');
+      }
+
+      show_hidden_img_button.addEventListener('keydown', showImage, false);
+      show_hidden_img_button.addEventListener('click', showImage, false);
+      user_answer.addEventListener('keyup', checkAnswer, false);
+
+  </script>
+
+{% endblock javascript %}
