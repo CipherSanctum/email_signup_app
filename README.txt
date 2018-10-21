@@ -2,19 +2,16 @@ PROGRAM CREATED BY:
 Kevin / discomushroom from pwnsaucedesigns.com
 
 PURPOSE:
-To bypass companies who want to censor your ability to send to your email lists
-for whatever reason.
+To bypass companies who want to censor your ability to send to your email lists for whatever reason.
 
 ADDITIONAL CONTRIBUTIONS:
 None yet
 
 IF YOU WANT TO CONTRIBUTE:
-Improvements, suggestions, etc. are all welcome. If you contribute, I'll add your
-name / site to the list above.
+Improvements, suggestions, etc. are all welcome. If you contribute, I'll add your name / site to the list above.
 
 FUTURE VERSIONS:
-In the future I will add the ability to have multiple EmailList's,
-and the ability to send pretty html emails.
+In the future I will add the ability to have multiple EmailList's, and the ability to send pretty html emails.
 
 LICENSE:
 From here https://choosealicense.com/licenses/mit/
