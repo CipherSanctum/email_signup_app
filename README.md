@@ -1,19 +1,19 @@
-# Email sign up app for Django 2.x
+# Email sign up app / list for Django 2.x
 
 ### PROGRAM CREATED BY:
 Kevin / DiscoMushroom from PwnSauceDesigns.com
 
 ### PURPOSE:
-To bypass companies who want to censor your ability to send to your email lists for whatever reason.
+Big companies have proven their ability to censor people based on their beliefs, including email list building companies. I created this program to cut out the middleman. Whether their beliefs are good are bad is not the point, and are also subjective. The point is that freedom of speech should be respected.
 
 ### FUTURE VERSIONS:
-I will add the ability to have multiple EmailList's, and the ability to send pretty html emails.
+I will add the ability to have multiple EmailList model's, and the ability to send pretty html emails.
 
 ### LICENSE:
 MIT License: https://choosealicense.com/licenses/mit/
 
 ### INSTRUCTIONS:
-For the latest version go to the blog for this at the following, or read below.
+For the latest version go to the blog for this at the following, or read below *(but I will update here too)*:
 https://www.PwnSauceDesigns.com/blog/2018/8/15/beat-big-tech-censorship-by-making-your-own-email-list-cms/
 
 1. Have your own VPS setup and running Django 2.x, and Python 3.x. It works on Django 2.0.5 and 2.1, but there are really not
