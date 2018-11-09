@@ -14,7 +14,7 @@ I will add the ability to have multiple EmailList model's, and the ability to se
 ### LICENSE:
 MIT License: https://choosealicense.com/licenses/mit/
 
-### INSTRUCTIONS/ USAGE:
+### INSTRUCTIONS / USAGE:
 For the latest version go to the blog for this at the following, or read below *(but I will update here too)*:
 https://www.PwnSauceDesigns.com/blog/2018/8/15/beat-big-tech-censorship-by-making-your-own-email-list-cms/
 
