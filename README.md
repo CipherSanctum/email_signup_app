@@ -14,6 +14,11 @@ I will add the ability to have multiple EmailList model's, and the ability to se
 ### LICENSE:
 MIT License: https://choosealicense.com/licenses/mit/
 
+### EXAMPLE:
+Can be found here. No signup / login required: https://pwnsaucedesigns.com/email_signup_app/
+In the example there, I am using sendgrid's api to confirm your signup, but the emails are stored on my database, not MailChimp or
+anywhere else.
+
 ### INSTRUCTIONS / USAGE:
 For the latest version go to the blog for this at the following, or read below *(but I will update here too)*:
 https://www.PwnSauceDesigns.com/blog/2018/8/15/beat-big-tech-censorship-by-making-your-own-email-list-cms/
