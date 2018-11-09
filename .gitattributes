@@ -1,0 +1,3 @@
+email_signup_app/templates/* linguist-vendored
+root_templates/* linguist-vendored
+captcha_images/* linguist-vendored
