@@ -1,5 +1,7 @@
 # Email sign up app / list for Django 2.x
 
+Includes Roman nummeral captcha app with vanilla javascript.
+
 ### PROGRAM CREATED BY:
 Kevin / DiscoMushroom from PwnSauceDesigns.com
 
