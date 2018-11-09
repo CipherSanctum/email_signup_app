@@ -6,7 +6,7 @@ Includes Roman nummeral captcha app with vanilla javascript.
 Kevin / DiscoMushroom from PwnSauceDesigns.com
 
 ### PURPOSE:
-Big companies have proven their ability to censor people based on their beliefs, including email list building companies. I created this program to cut out the middleman. Whether the beliefs of those in question are good or bad is not the point, and are also subjective. The point is that freedom of speech should be respected on a level playing ground for all. Not bestowing it for one and denying it for others, while also lying about what the banned person*(s)* said or did.
+Big companies have proven their ability to censor people based on their beliefs, including email list building companies. I created this program to cut out the middleman. Whether the beliefs of those in question are good or bad is not the point, and are also subjective. The point is that freedom of speech should be respected on a level playing ground for all. Not bestowing it for one and denying it for others, while also lying about what the banned person(s) said or did.
 
 ### FUTURE VERSIONS:
 I will add the ability to have multiple EmailList model's, and the ability to send pretty html emails.
