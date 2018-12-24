@@ -21,7 +21,7 @@ anywhere else.
 
 ### INSTRUCTIONS / USAGE:
 For the latest version go to the blog for this at the following, or read below *(but I will update here too)*:
-https://www.PwnSauceDesigns.com/blog/2018/8/15/beat-big-tech-censorship-by-making-your-own-email-list-cms/
+https://pwnsaucedesigns.com/blog/2018/10/21/beat-big-tech-censorship-by-making-your-own-email-list-cms/
 
 1. Have your own VPS setup and running Django 2.x, and Python 3.x. It works on Django 2.0.5 and 2.1, but there are really not
 that many huge changes with other versions of django. So check the code first if you're unsure.
