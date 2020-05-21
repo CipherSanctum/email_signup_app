@@ -3,7 +3,7 @@
 Includes a Roman nummeral captcha app with vanilla javascript.
 
 ### PROGRAM CREATED BY:
-Kevin from PwnSauceDesigns.com
+Kevin from CyberHavenProgramming.com
 
 ### PURPOSE:
 Big companies have proven their ability to censor people based on their beliefs, including email list building companies. I created this program to cut out the middleman. Whether the beliefs of those in question are good or bad is not the point, and are also subjective. The point is that freedom of speech should be respected on a level playing ground for all. Not bestowing it for one and denying it for others, while also lying about what the banned person(s) said or did.
@@ -15,13 +15,13 @@ I will add the ability to have multiple EmailList model's, and the ability to se
 MIT License: https://choosealicense.com/licenses/mit/
 
 ### EXAMPLE:
-Can be found here. No signup / login required: https://pwnsaucedesigns.com/email_signup_app/
+Can be found here. No signup / login required: https://CyberHavenProgramming.com/email_signup_app/
 In the example there, I am using sendgrid's api to confirm your signup, but the emails are stored on my database, not MailChimp or
 anywhere else.
 
 ### INSTRUCTIONS / USAGE:
 For the latest version go to the blog for this at the following, or read below *(but I will update here too)*:
-https://pwnsaucedesigns.com/blog/2018/10/21/beat-big-tech-censorship-by-making-your-own-email-list-cms/
+https://CyberHavenProgramming.com/blog/2018/10/21/beat-big-tech-censorship-by-making-your-own-email-list-cms/
 
 1. Have your own VPS setup and running Django 2.x, and Python 3.x. It works on Django 2.0.5 and 2.1, but there are really not
 that many huge changes with other versions of django. So check the code first if you're unsure.
