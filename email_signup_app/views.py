@@ -1,94 +1,74 @@
+from django.shortcuts import render  # redirect
+from django.core.mail import get_connection, send_mail  #, get_connection
+from django.core.mail.message import EmailMessage
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from .forms import EmailSignupForm
-from .models import EmailListPerson, EmailListPersonDelete
-from .tasks import signup_email
-from captcha_app.models import CaptchaNumber
+from .forms import EmailListSubscriberForm
+from .models import EmailListSubscriber
+# from .tasks import signup_email  # delete_email
+from project_root.local_settings import (EMAIL_HOST, EMAIL_PORT,
+                                            EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
+                                            EMAIL_USE_SSL)
 
 
 def email_signup_home(request):
-    form = EmailSignupForm(request.POST or None)
+    form = EmailListSubscriberForm(request.POST or None)
     if request.method == 'POST':
-        attempted_email = request.POST.get('email', False).lower()
         try:
-            check_email = EmailListPerson.objects.get(email=attempted_email)
-            if check_email.status_choices == 'confirmed':
-                return render(request, 'email_signup_app/confirmation_check.html', {'already_confirmed': check_email})
-            elif check_email.status_choices == 'unconfirmed':
-                random_img = CaptchaNumber.objects.order_by('?').first()
-                return render(request, 'email_signup_app/confirmation_check.html', {'dont_send_twice': check_email, 'random_img': random_img})
+            attempted_email = request.POST.get('user_email', False).lower()
+            this_person = EmailListSubscriber.objects.get(user_email=attempted_email)
+            if this_person.is_confirmed:
+                return render(request, 'email_signup_app/confirmation_check.html', {'already_confirmed': True})
+            elif (this_person.user_email == attempted_email) and (not this_person.is_confirmed):
+                return render(request, 'email_signup_app/confirmation_check.html', {'remind_check_email': True})
         except ObjectDoesNotExist:
             if form.is_valid():
-                add_unconf_email = EmailListPerson()
-                add_unconf_email.email = attempted_email
-                add_unconf_email.save()
-                signup_email.delay(add_unconf_email.id)
-                return redirect('email_signup_app:email_signup_go_check')
-    return render(request, 'email_signup_app/home.html', {'form': form})
+                unconf_user = form.save(commit=False)
+                unconf_user.user_email = attempted_email
+                unconf_user.name = request.POST.get('email_sub_name', False).title()
+                unconf_user.save()
+                request.session.setdefault('email_list_conf_sent', 'An email has already been sent')    # can acces in template from request.session.email_signup, so it's visible on every page... Just put it in base.html, and
+                                                                                                  # write the form raw so you don't need special form for every view
 
+                # Send email when testing offline...
+                # send_mail('Please confirm your email subscription to MyWebsite.com',
+                #           'Just click the link below and follow the directions\n\nhttps://www.MyWebsite.com/email_signup_app/{}/{}/'.format(unconf_user.id, unconf_user.random_uuid),
+                #           'donotreply@YourWebsite.com',
+                #           [unconf_user.user_email],
+                #           fail_silently=False)
 
-def email_signup_go_check(request):
-    return render(request, 'email_signup_app/home.html', {'go_check_email': 'Please go check your email to confirm it.'})
+                # Send email when live
+                with get_connection(host=EMAIL_HOST, port=EMAIL_PORT, username=EMAIL_HOST_USER, password=EMAIL_HOST_PASSWORD, use_ssl=EMAIL_USE_SSL) as connection:
+                    EmailMessage('Please confirm your email subscription to MyWebsite.com',
+                                'Just click the link below and follow the directions\n\nhttps://www.MyWebsite.com/email_signup_app/{}/{}/'.format(unconf_user.id, unconf_user.random_uuid),
+                                'donotreply@YourWebsite.com',
+                                [unconf_user.user_email],
+                                headers={'List-Subscribe': '<{}>'.format(unconf_user.user_email)},
+                                connection=connection).send()
+
+                return render(request, 'email_signup_app/confirmation_check.html', {'email_sent': True})
+    return render(request, 'email_signup_app/confirmation_check.html', {'form': form})
 
 
 def email_signup_confirm(request, unconf_email_id, random_uuid):
-    unconf_email = EmailListPerson.objects.get(id=unconf_email_id)
+    unconf_email = EmailListSubscriber.objects.get(id=unconf_email_id)
     if request.method == 'POST':
-        conf_email = unconf_email
-        conf_email.status_choices = 'confirmed'
-        conf_email.save()
-        return redirect(reverse('email_signup_app:email_signup_done', args=[conf_email.id, conf_email.random_uuid, conf_email.rand_int]))
+        new_email = unconf_email
+        new_email.is_confirmed = True
+        new_email.save()
+        request.session.pop('email_list_conf_sent', None)
+        request.session.setdefault('email_list_confirmed', 'Thanks for signing up!')
+        return render(request, 'email_signup_app/confirmation_check.html', {'signed_up': True})
     return render(request, 'email_signup_app/confirmation_check.html', {'unconf_email': unconf_email})
 
 
-def email_signup_done(request, conf_email_id, random_uuid, rand_int):
-    conf_email = EmailListPerson.objects.get(id=conf_email_id)
+def email_unsubscribe(request, conf_email_id, random_uuid):
+    this_subscriber = EmailListSubscriber.objects.get(id=conf_email_id)
+    form = EmailListSubscriberForm(request.POST or None)
     if request.method == 'POST':
-        if conf_email.email == request.POST.get('email', False).lower():
-            conf_email.times_downloaded = 0
-            conf_email.save()
-            return render(request, 'email_signup_app/done.html', {'reset_times_downloaded': 'Your limit has been reset'})
+        prove_user_email = request.POST.get('user_email', False).lower()
+        if prove_user_email == this_subscriber.user_email:
+            this_subscriber.delete()
+            return render(request, 'email_signup_app/confirmation_check.html', {'removed': True})
         else:
-            return render(request, 'email_signup_app/done.html', {'wrong_email': 'Wrong email'})
-    if conf_email.times_downloaded <= 2:
-        conf_email.times_downloaded += 1
-        conf_email.save()
-        return render(request, 'email_signup_app/done.html', {'signed_up': 'Thanks for signing up!'})
-    else:
-        return render(request, 'email_signup_app/done.html', {'too_many_times': 'You have been here too many times'})
-
-
-def email_list_remove(request, conf_email_id, random_uuid):
-    """
-        WHY I DO NOT ALLOW USERS TO conf_email.delete() HERE:
-            Assume you had 20 EmailListPerson's.... Since the admin action slice's the list by the status_choices='confirmed'
-            attribute, if you modify this list before the campaign is done sending to everyone on it, you are likely to end up with people receiving doubles,
-            or no email at all. Doubles can hurt your sending reputation among receiving mail servers, and reduce your ability to get messages
-            to their inbox. And no emails = no notice. So both are bad.
-        EXAMPLE:
-            original_list = [0:10]
-            # you send to original_list on day 1, and [0:4] delete themselves right after sending...
-            # day 2 comes, and you send to [10:21], thinking your whole list has been emailed...
-            # But python sees original_list as what the original [4:14] would have been (4-13), which is 10 people,
-            # it's correct to do so, and you just skipped sending to objects 10-13 without knowing it, because
-            # the 2nd day, [10:21] became what the original [14:21] would have been.
-        SOLUTION:
-            Run the admin action to delete people who want off your sending list AFTER your campaign is completely done sending to
-            everyone on it.
-    """
-    conf_email = EmailListPerson.objects.get(id=conf_email_id)
-    if request.method == 'POST':
-        check_user = request.POST.get('remove_email', False).lower()
-        if (check_user == conf_email.email) and (conf_email.status_choices == 'confirmed'):
-            request_removal = EmailListPersonDelete()
-            request_removal.email = conf_email.email
-            request_removal.save()
-            return redirect('email_signup_app:email_list_remove_done')
-        else:
-            return render(request, 'email_signup_app/remove_email_check.html', {'wrong_email': 'Wrong email'})
-    return render(request, 'email_signup_app/remove_email_check.html')
-
-
-def email_list_remove_done(request):
-    return render(request, 'email_signup_app/remove_email_check.html', {'removed': 'You have been successfully removed from the email list'})
+            return render(request, 'email_signup_app/confirmation_check.html', {'email_doesnt_exist': True, 'this_subscriber': this_subscriber, 'form': form})
+    return render(request, 'email_signup_app/confirmation_check.html', {'wants_to_unsub': True, 'this_subscriber': this_subscriber, 'form': form})
