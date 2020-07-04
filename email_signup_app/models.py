@@ -1,43 +1,36 @@
 from django.db import models
+from django.utils import timezone
 import uuid
-import random
+
+CATEGORY_CHOICES = (
+    ('general_interests', 'General Interests'),
+    ('blah', 'Blah'),
+)
+DAYS = (
+    ('1', 'Day 1'),
+    ('2', 'Day 2'),
+    ('3', 'Day 3'),
+    ('4', 'Day 4'),
+    ('5', 'Day 5'),
+    ('6', 'Day 6'),
+    ('7', 'Day 7'),
+    ('8', 'Day 8'),
+    ('9', 'Day 9'),
+    ('10', 'Day 10'),
+)
 
 
-def random_number():
-    return random.randint(1, 50000)
-
-
-class EmailListPerson(models.Model):
-    STATUS_CHOICES = (
-        ('unconfirmed', 'Unconfirmed'),
-        ('confirmed', 'Confirmed'),
-    )
-    email = models.CharField(max_length=100)
-    status_choices = models.CharField(max_length=30, choices=STATUS_CHOICES, default='unconfirmed')
-    random_uuid = models.UUIDField(default=uuid.uuid4, unique=True)
-    rand_int = models.IntegerField(default=random_number)
-    times_downloaded = models.IntegerField(default=0)
-
-    class Meta:
-        verbose_name_plural = 'People on list'
-
-
-class EmailListPersonDelete(models.Model):
-    email = models.CharField(max_length=100)
-
-    class Meta:
-        verbose_name_plural = 'People requesting to be removed from list'
-
-
-class EmailCampaign(models.Model):
-    title = models.CharField(max_length=100, blank=False)
-    body = models.TextField(blank=False)  # Emails are text only for now.
-    created = models.DateTimeField(auto_now_add=True)
-    start_point = models.IntegerField(default=0)
-    end_point = models.IntegerField(default=0)
+class EmailListSubscriber(models.Model):
+    email_sub_name = models.CharField(max_length=255, blank=True, default='')
+    user_email = models.EmailField(blank=False)
+    is_confirmed = models.BooleanField(default=False)
+    joined = models.DateTimeField(auto_now_add=True)
+    emails_sent = models.IntegerField(default=0)
+    category = models.CharField(max_length=255, choices=CATEGORY_CHOICES, default='general_interests')
+    random_uuid = models.UUIDField(default=uuid.uuid4)
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-joined',)
 
     def __str__(self):
-        return self.title
+        return self.user_email
