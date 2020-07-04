@@ -1,47 +1,21 @@
 {% extends 'base.html' %}
 
 
-{% block head_tag_seo %}
-    <title>Remove your email confirmation check</title>
-{% endblock head_tag_seo %}
-
+{% block seotag %}
+    <title>Confirmation check:</title>
+{% endblock seotag %}
 
 
 {% block maincontent %}
 
-  {% if removed %}
+  <h1 class="margintop100px">Confirmation check:</h1>
 
-      <h1 class="margintop100px fonth1clonegreen">{{ removed }}</h1>
-      <p>Sorry to see you go :(, but <mark>please wait at least a week for changes to occur.</mark></p>
+  <p>Please type your email below and click confirm to remove yourself from this list. No need to worry about capitals. It's all lowered on the server anyway.</p>
 
-
-  {% elif wrong_email %}
-
-      <h1 class="margintop100px fonth1clonegreen">{{ wrong_email }}</h1>
-      <p>You typed it wrong, or you were never confirmed to begin with. Nothing is case sensitive. Try again if you want.</p>
-
-      <form action="." method="POST" class="margintop50px">
-        {% csrf_token %}
-        <label class="disp_block">Email:</label>
-        <input name="remove_email" type="email" class="inputbox margintop10px">
-        <input type="submit" value="Confirm!" class="submitbox disp_block center_input_25px_margin_top">
-      </form>
-
-
-  {% else %}
-
-      <h1 class="margintop100px fonth1clonegreen">Remove yourself from my email list???</h1>
-
-      <p>Please type your email below and click confirm to remove yourself from my email list. No need to worry about capitals.</p>
-
-      <form action="." method="POST" class="margintop50px">
-        {% csrf_token %}
-        <label class="disp_block">Email:</label>
-        <input name="remove_email" type="email" class="inputbox margintop10px">
-        <input type="submit" value="Confirm!" class="submitbox disp_block center_input_25px_margin_top">
-      </form>
-
-  {% endif %}
-
+  <form action="." method="POST">
+    {% csrf_token %}
+    <input name="remove_email" type="text">
+    <input type="submit" value="Confirm!" class="submitbox">
+  </form>
 
 {% endblock maincontent %}
