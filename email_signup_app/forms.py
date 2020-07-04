@@ -1,30 +1,22 @@
 from django import forms
-# from .models import EmailCampaign
+from django.utils.translation import gettext_lazy as _
+from .models import EmailListSubscriber
 
 
-class EmailSignupForm(forms.Form):
-    email = forms.EmailField(
-                label='Email',
-                min_length=5,
-                max_length=100,
-                widget=forms.EmailInput(
-                    attrs={
-                        'id': 'email_signup',
-                        'placeholder': 'Put your email here...',
-                        'class': 'inputbox disp_block center_input_10px_margin_top',
-                    }
-                )
-            )
+class EmailListSubscriberForm(forms.ModelForm):
+    class Meta:
+        model = EmailListSubscriber
+        fields = ('email_sub_name', 'user_email')
+        widgets = {
+                    'user_email': forms.EmailInput(attrs={'placeholder': 'your@email.com'}),
+                    'email_sub_name': forms.TextInput(attrs={'placeholder': 'optional name'})
+                }
+        labels = {'user_email': _('Your Email'), 'email_sub_name': _('Your email')}
 
 
-# THE FOLLOWING IS NOT YET IMPLEMENTED, OR WRITTEN CORRECTLY...
-# A radio button should override the default check box on the admin page for
-# better efficiency.
-
-# class EmailCampaignAdminForm(forms.ModelForm):
-#     class Meta:
-#         model = EmailCampaign
-#         widgets = {
-#             'id': forms.RadioSelect,
-#         }
-#         exclude = ['body', 'title']
+    # FOR CUSTOM VALIDATION ONLY!!!!
+    # def clean_email(self):
+    #     email = self.cleaned_data.get('user_email')
+    #     if not "gmail.com" in email:
+    #         raiso forms.ValidationError("Email has to be at gmail.com")
+    #     return email
